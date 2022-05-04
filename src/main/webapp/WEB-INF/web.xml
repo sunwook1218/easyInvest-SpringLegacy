@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://Java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+    <!-- 여기에 등록된 설정 파일에 따라 등록된 Bean들은 모두 공유가 가능하다. -->
+    <!-- root-context.xml을 정의 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+    <!-- ContextLoaderListener --> 
+    <!-- 리스너로써 root-context.xml에 정의 되어있는 것들을 모든 서블릿과 필터가 공유할 수 있게 해준다고 함. -->
+    <!-- Controller가 공유하는 Bean들을 포함하는 Spring Container를 생성한다 -->
+    <!-- 공유하는 Bean: Dao, DataSource, Service --> 
+    <!-- DispatcherServlet에 의해 생성된 Bean은 ContextLoaderListener에 의해 생성된 Bean을 참조할 수 있다.--> 
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+    <!-- Processes application requests -->
+    <!-- DisparcherServlet -->
+    <!-- 1. Spring Container를 생성한다. (Spring Container: Controller의 lifecycle 관리) -->
+    <!-- 2. 클라이언트의 요청을 처음으로 받는 클래스 (Spring에서 제공) -->
+    <!-- 3. 클라이언트의 요청을 Handler(Controller)에 보낸다. -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- contextLoader가 해당 위치의 설정 파일을 읽어, 해당 파일을 dispatcher servlet으로 만든다. -->
+        <init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+    
+	<!-- /로 시작하는(/뒤에 공백) url 요청을 받아 appServlet에서 처리한다. -->
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 한글처리 : 인코딩을 UTF-8로 설정하여 필터링하겠다는 설정이다. -->
+    <filter> 
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class> 
+        <init-param> 
+           <param-name>encoding</param-name> 
+           <param-value>UTF-8</param-value> 
+        </init-param> 
+        <init-param> 
+           <param-name>forceEncoding</param-name> 
+           <param-value>true</param-value> 
+        </init-param> 
+     </filter> 
+     <filter-mapping> 
+        <filter-name>encodingFilter</filter-name> 
+        <url-pattern>/*</url-pattern> 
+     </filter-mapping>
+     
+</web-app>
